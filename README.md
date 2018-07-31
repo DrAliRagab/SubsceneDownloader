@@ -4,18 +4,18 @@
 - With **SubsceneDownloader**, Just select your movies folder, choose your prefered language  and **SubsceneDownloader** will do the rest.
 
 ### Features
-![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
+![](https://raw.githubusercontent.com/DrAliRagab/SubsceneDownloader/master/Doc/0.png)
 
 - Download multiple subtitles in the same language;
 - Download in many language;
 - You can hide the downloaded subtitles.
-![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
+![](https://raw.githubusercontent.com/DrAliRagab/SubsceneDownloader/master/Doc/1.png)
 - --
-![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
+![](https://raw.githubusercontent.com/DrAliRagab/SubsceneDownloader/master/Doc/2.png)
 - --
 ## Download
 
-You can download the **latest releases** from [HERE](https://github.com/DrAliRagab/Movies-Icon-Changer/releases) 
+You can download the **latest releases** from [HERE](https://github.com/DrAliRagab/SubsceneDownloader/releases) 
 
 
 ## COPYRIGHTS
