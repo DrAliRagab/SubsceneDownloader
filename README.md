@@ -9,10 +9,15 @@
 - Download multiple subtitles in the same language;
 - Download in many language;
 - You can hide the downloaded subtitles.
+
 ![](https://raw.githubusercontent.com/DrAliRagab/SubsceneDownloader/master/Doc/1.png)
+
 - --
+
 ![](https://raw.githubusercontent.com/DrAliRagab/SubsceneDownloader/master/Doc/2.png)
+
 - --
+
 ## Download
 
 You can download the **latest releases** from [HERE](https://github.com/DrAliRagab/SubsceneDownloader/releases) 
