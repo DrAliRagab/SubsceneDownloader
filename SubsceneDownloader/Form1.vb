@@ -179,7 +179,7 @@ Public Class Form1
 
                         For i As Integer = 0 To subFiles.Count - 1
                             Dim subname As String = ""
-                            subname = Path.GetFileNameWithoutExtension(subFiles(i)).Substring(0, Path.GetFileNameWithoutExtension(subFiles(i)).Length - 5)
+                            subname = Path.GetFileNameWithoutExtension(subFiles(i)).Substring(0, Path.GetFileNameWithoutExtension(subFiles(i)).Length - 6)
                             If movieName Like subname Then
                                 skip = True
                                 Exit For
@@ -479,8 +479,6 @@ Public Class Form1
         End Using
         BackgroundWorker1.ReportProgress(c)
 
-        MsgBox("DONE")
-
     End Sub
 
     Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
@@ -493,6 +491,24 @@ Public Class Form1
     End Sub
 
     Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
+
+        Try
+            If ComboBox2.SelectedIndex = 1 Then
+                Shell("Shutdown -s -f -t 5")
+            ElseIf ComboBox2.SelectedIndex = 2 Then
+                Shell("Shutdown -r -f -t 5")
+            ElseIf ComboBox2.SelectedIndex = 3 Then
+                Shell("shutdown -l -f")
+            ElseIf ComboBox2.SelectedIndex = 4 Then
+                Application.SetSuspendState(PowerState.Suspend, True, True)
+            ElseIf ComboBox2.SelectedIndex = 5 Then
+                Application.SetSuspendState(PowerState.Hibernate, True, True)
+            End If
+        Catch ex As Exception
+        End Try
+
+        MsgBox("DONE")
+
         Button1.Enabled = True
         Button2.Enabled = True
         GroupBox1.Enabled = True
@@ -501,6 +517,7 @@ Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Label1.Text = ""
         ComboBox1.SelectedIndex = 0
+        ComboBox2.SelectedIndex = 0
     End Sub
 
 End Class
