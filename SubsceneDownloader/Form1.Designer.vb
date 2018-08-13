@@ -59,7 +59,7 @@ Partial Class Form1
         Me.TextBox1.ReadOnly = True
         Me.TextBox1.Size = New System.Drawing.Size(490, 20)
         Me.TextBox1.TabIndex = 0
-        Me.TextBox1.Text = "D:\11\Movies - Copy"
+        Me.TextBox1.Text = "F:\Series"
         '
         'Button1
         '

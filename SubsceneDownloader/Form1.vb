@@ -171,7 +171,7 @@ Public Class Form1
                 movieName = Path.GetFileNameWithoutExtension(filename)
                 subPath = Path.GetDirectoryName(filename)
 
-                If CheckBox3.Checked And CheckBox1.Checked Then
+                If CheckBox3.Checked And (CheckBox1.Checked = True) Then
 
                     If Directory.Exists(subPath.ToString + "\subtitles") Then
 
@@ -201,7 +201,7 @@ Public Class Form1
 
                         For i As Integer = 0 To subFiles.Count - 1
                             Dim subname As String = ""
-                            subname = Path.GetFileNameWithoutExtension(subFiles(i)).Substring(0, Path.GetFileNameWithoutExtension(subFiles(i)).Length - 5)
+                            subname = Path.GetFileNameWithoutExtension(subFiles(i)).Substring(0, Path.GetFileNameWithoutExtension(subFiles(i)).Length - 6)
                             If movieName Like subname Then
                                 skip = True
                                 Exit For
