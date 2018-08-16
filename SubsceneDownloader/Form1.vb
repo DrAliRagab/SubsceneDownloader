@@ -217,261 +217,261 @@ Public Class Form1
 
                 End If
 
-                'Try
+                Try
 
-                Dim html = "https://subscene.com/subtitles/release?q=" + movieName + "&r=true"
-                Dim web As HtmlWeb = New HtmlWeb()
-                Dim htmlDoc = web.Load(html)
-                Dim htmlBody = htmlDoc.DocumentNode.SelectSingleNode("//body/div/div/div/div/table/tbody")
-                Dim childNodes As HtmlNodeCollection = htmlBody.ChildNodes
-                Dim n As Integer = 0
-                Dim subtitles As subtitle() = New subtitle(childNodes.Count) {}
+                    Dim html = "https://subscene.com/subtitles/release?q=" + movieName + "&r=true"
+                    Dim web As HtmlWeb = New HtmlWeb()
+                    Dim htmlDoc = web.Load(html)
+                    Dim htmlBody = htmlDoc.DocumentNode.SelectSingleNode("//body/div/div/div/div/table/tbody")
+                    Dim childNodes As HtmlNodeCollection = htmlBody.ChildNodes
+                    Dim n As Integer = 0
+                    Dim subtitles As subtitle() = New subtitle(childNodes.Count) {}
 
-                For Each node In childNodes
+                    For Each node In childNodes
 
-                    If node.NodeType = HtmlNodeType.Element Then
-                        Dim nNodes As HtmlNodeCollection = node.ChildNodes
-                        Dim s As String = nNodes(1).InnerHtml
-                        Dim i As Integer = s.IndexOf("<a href=""")
-                        Dim f As String = s.Substring(i + 9, s.IndexOf(""">", i + 1) - i - 9)
+                        If node.NodeType = HtmlNodeType.Element Then
+                            Dim nNodes As HtmlNodeCollection = node.ChildNodes
+                            Dim s As String = nNodes(1).InnerHtml
+                            Dim i As Integer = s.IndexOf("<a href=""")
+                            Dim f As String = s.Substring(i + 9, s.IndexOf(""">", i + 1) - i - 9)
 
-                        subtitles(n).Link = "https://subscene.com" + f
+                            subtitles(n).Link = "https://subscene.com" + f
 
-                        i = s.IndexOf("<span class=")
-                        f = s.Substring(i + 12, s.IndexOf("</span>", i + 1) - i - 12)
+                            i = s.IndexOf("<span class=")
+                            f = s.Substring(i + 12, s.IndexOf("</span>", i + 1) - i - 12)
 
-                        If f.ToLower.Contains(Lang.ToLower) Then
-                            subtitles(n).Language = Lang
-                        End If
+                            If f.ToLower.Contains(Lang.ToLower) Then
+                                subtitles(n).Language = Lang
+                            End If
 
-                        If f.ToLower.Contains("positive") Then
-                            subtitles(n).positive = "positive"
-                        End If
+                            If f.ToLower.Contains("positive") Then
+                                subtitles(n).positive = "positive"
+                            End If
 
-                        i = s.IndexOf("<span>")
-                        f = s.Substring(i + 12, s.IndexOf("</span>", i + 1) - i - 12)
-                        subtitles(n).Title = f.TrimStart.TrimEnd
+                            i = s.IndexOf("<span>")
+                            f = s.Substring(i + 12, s.IndexOf("</span>", i + 1) - i - 12)
+                            subtitles(n).Title = f.TrimStart.TrimEnd
 
-                        s = nNodes(7).InnerHtml
+                            s = nNodes(7).InnerHtml
 
-                        If s.TrimStart.TrimEnd.StartsWith("<a href=", StringComparison.OrdinalIgnoreCase) Then
-                            i = s.IndexOf(">")
-                            f = s.Substring(i + 1, s.IndexOf("</a>", i + 1) - i - 1)
+                            If s.TrimStart.TrimEnd.StartsWith("<a href=", StringComparison.OrdinalIgnoreCase) Then
+                                i = s.IndexOf(">")
+                                f = s.Substring(i + 1, s.IndexOf("</a>", i + 1) - i - 1)
 
-                            subtitles(n).Owner = f.TrimStart.TrimEnd
+                                subtitles(n).Owner = f.TrimStart.TrimEnd
 
-                        Else
-                            subtitles(n).Owner = s.TrimStart.TrimEnd
-
-                        End If
-
-                    End If
-                    n += 1
-
-                Next
-
-                DataGridView1.Rows.Add(subtitles.Count)
-
-                For i As Integer = 0 To subtitles.Count - 1
-                    DataGridView1.Rows(i).Cells(0).Value = subtitles(i).Title
-                    DataGridView1.Rows(i).Cells(1).Value = subtitles(i).Link
-                    DataGridView1.Rows(i).Cells(2).Value = subtitles(i).Owner
-                    DataGridView1.Rows(i).Cells(3).Value = subtitles(i).Language
-                    DataGridView1.Rows(i).Cells(4).Value = subtitles(i).positive
-                Next
-
-                For i As Integer = DataGridView1.RowCount - 1 To 0 Step -1
-
-                    If DataGridView1.Rows(i).Cells(3).Value = "" Then
-                        DataGridView1.Rows.RemoveAt(i)
-
-                    ElseIf DataGridView1.Rows(i).Cells(0).Value.ToString.ToLower.Contains("trailer") Then
-                        DataGridView1.Rows.RemoveAt(i)
-
-                    End If
-                Next
-
-                DataGridView1.Sort(DataGridView1.Columns("Rating"), System.ComponentModel.ListSortDirection.Descending)
-
-                Dim b As Integer = 1
-                Dim sN As Integer = NumericUpDown1.Value
-                Dim tempPath As String = ""
-                tempPath = FileIO.SpecialDirectories.Temp & "\SubSceneDownloader\"
-
-                If DataGridView1.RowCount > 0 And DataGridView1.RowCount < (sN + 1) Then
-                    'Try
-                    For i As Integer = 0 To DataGridView1.RowCount - 1
-                        Dim xhtml = DataGridView1.Rows(i).Cells(1).Value
-                        Dim xweb As HtmlWeb = New HtmlWeb()
-                        Dim xhtmlDoc = xweb.Load(xhtml)
-                        Dim xf As String = ""
-
-                        For Each node As HtmlNode In xhtmlDoc.DocumentNode.SelectNodes("//*[@id=""downloadButton""]")
-                            Dim value As String = node.OuterHtml
-                            Dim xs As String = value
-                            Dim xi As Integer = xs.IndexOf("""")
-                            xf = xs.Substring(xi + 1, xs.IndexOf("""", xi + 1) - xi - 1)
-
-                        Next
-
-                        If File.Exists(tempPath & "sub.zip") Then
-                            IO.File.Delete(tempPath & "sub.zip")
-                        End If
-
-                        If Directory.Exists(tempPath & "sub") Then
-                            IO.Directory.Delete(tempPath & "sub", True)
-                        End If
-
-                        My.Computer.Network.DownloadFile("https://subscene.com" + xf, tempPath & "sub.zip")
-
-                        Dim _zLibraryPath As String = ""
-                        If System.Environment.Is64BitProcess = True Then
-                            _zLibraryPath = My.Computer.FileSystem.CurrentDirectory + "\x64\7z.dll"
-                        Else
-                            _zLibraryPath = My.Computer.FileSystem.CurrentDirectory + "\x86\7z.dll"
-                        End If
-
-                        SevenZipBase.SetLibraryPath(_zLibraryPath)
-                        Dim Extractor As New SevenZipExtractor(tempPath & "sub.zip")
-                        Extractor.ExtractArchive(tempPath & "sub")
-
-                        Dim subFiles = Directory.EnumerateFiles(tempPath & "sub", "*.*", SearchOption.AllDirectories) _
-                        .Where(Function(s) s.EndsWith(".srt", StringComparison.OrdinalIgnoreCase))
-
-                        For Each subFilename As String In subFiles
-
-                            Dim sPath As String = ""
-                            If CheckBox1.Checked Then
-                                sPath = subPath.ToString + "\subtitles"
                             Else
-                                sPath = subPath.ToString
+                                subtitles(n).Owner = s.TrimStart.TrimEnd
+
                             End If
 
-                            If IO.Directory.Exists(sPath) = False Then
-                                IO.Directory.CreateDirectory(sPath)
-                            End If
-
-                            Try
-                                SetAttr(sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", FileAttribute.Normal)
-                            Catch ex As Exception
-                            End Try
-                            File.Copy(subFilename, sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", True)
-
-                            If CheckBox2.Checked Then
-                                Try
-                                    SetAttr(sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", FileAttribute.Hidden)
-                                    SetAttr(subPath.ToString + "\subtitles", FileAttribute.Hidden)
-                                Catch ex As Exception
-                                End Try
-                            End If
-
-                            b += 1
-                        Next
-
-                        If File.Exists(tempPath & "sub.zip") Then
-                            IO.File.Delete(tempPath & "sub.zip")
                         End If
-
-                        If Directory.Exists(tempPath & "sub") Then
-                            IO.Directory.Delete(tempPath & "sub", True)
-                        End If
+                        n += 1
 
                     Next
-                    'Catch ex As Exception
-                    '    writer.WriteLine("Error Message in  Occured at-- " & DateTime.Now & vbNewLine & ex.ToString & vbNewLine)
-                    'End Try
 
-                ElseIf DataGridView1.RowCount > sN Then
+                    DataGridView1.Rows.Add(subtitles.Count)
 
-                    'Try
-                    For i As Integer = 0 To (sN - 1)
-                        Dim xhtml = DataGridView1.Rows(i).Cells(1).Value
-                        Dim xweb As HtmlWeb = New HtmlWeb()
-                        Dim xhtmlDoc = xweb.Load(xhtml)
-                        Dim xf As String = ""
+                    For i As Integer = 0 To subtitles.Count - 1
+                        DataGridView1.Rows(i).Cells(0).Value = subtitles(i).Title
+                        DataGridView1.Rows(i).Cells(1).Value = subtitles(i).Link
+                        DataGridView1.Rows(i).Cells(2).Value = subtitles(i).Owner
+                        DataGridView1.Rows(i).Cells(3).Value = subtitles(i).Language
+                        DataGridView1.Rows(i).Cells(4).Value = subtitles(i).positive
+                    Next
 
-                        For Each node As HtmlNode In xhtmlDoc.DocumentNode.SelectNodes("//*[@id=""downloadButton""]")
-                            Dim value As String = node.OuterHtml
+                    For i As Integer = DataGridView1.RowCount - 1 To 0 Step -1
 
-                            Dim xs As String = value
-                            Dim xi As Integer = xs.IndexOf("""")
-                            xf = xs.Substring(xi + 1, xs.IndexOf("""", xi + 1) - xi - 1)
+                        If DataGridView1.Rows(i).Cells(3).Value = "" Then
+                            DataGridView1.Rows.RemoveAt(i)
 
-                        Next
+                        ElseIf DataGridView1.Rows(i).Cells(0).Value.ToString.ToLower.Contains("trailer") Then
+                            DataGridView1.Rows.RemoveAt(i)
 
-                        If File.Exists(tempPath & "sub.zip") Then
-                            IO.File.Delete(tempPath & "sub.zip")
                         End If
+                    Next
 
-                        If Directory.Exists(tempPath & "sub") Then
-                            IO.Directory.Delete(tempPath & "sub", True)
-                        End If
+                    DataGridView1.Sort(DataGridView1.Columns("Rating"), System.ComponentModel.ListSortDirection.Descending)
 
-                        My.Computer.Network.DownloadFile("https://subscene.com" + xf, tempPath & "sub.zip")
+                    Dim b As Integer = 1
+                    Dim sN As Integer = NumericUpDown1.Value
+                    Dim tempPath As String = ""
+                    tempPath = FileIO.SpecialDirectories.Temp & "\SubSceneDownloader\"
 
-                        Dim _zLibraryPath As String = ""
-                        If System.Environment.Is64BitProcess = True Then
-                            _zLibraryPath = My.Computer.FileSystem.CurrentDirectory + "\x64\7z.dll"
-                        Else
-                            _zLibraryPath = My.Computer.FileSystem.CurrentDirectory + "\x86\7z.dll"
-                        End If
+                    If DataGridView1.RowCount > 0 And DataGridView1.RowCount < (sN + 1) Then
+                        'Try
+                        For i As Integer = 0 To DataGridView1.RowCount - 1
+                            Dim xhtml = DataGridView1.Rows(i).Cells(1).Value
+                            Dim xweb As HtmlWeb = New HtmlWeb()
+                            Dim xhtmlDoc = xweb.Load(xhtml)
+                            Dim xf As String = ""
 
-                        SevenZipBase.SetLibraryPath(_zLibraryPath)
-                        Dim Extractor As New SevenZipExtractor(tempPath & "sub.zip")
-                        Extractor.ExtractArchive(tempPath & "sub")
+                            For Each node As HtmlNode In xhtmlDoc.DocumentNode.SelectNodes("//*[@id=""downloadButton""]")
+                                Dim value As String = node.OuterHtml
+                                Dim xs As String = value
+                                Dim xi As Integer = xs.IndexOf("""")
+                                xf = xs.Substring(xi + 1, xs.IndexOf("""", xi + 1) - xi - 1)
 
-                        Dim subFiles = Directory.EnumerateFiles(tempPath & "sub", "*.*", SearchOption.AllDirectories) _
-                        .Where(Function(s) s.EndsWith(".srt", StringComparison.OrdinalIgnoreCase))
+                            Next
 
-                        For Each subFilename As String In subFiles
+                            If File.Exists(tempPath & "sub.zip") Then
+                                IO.File.Delete(tempPath & "sub.zip")
+                            End If
 
-                            Dim sPath As String = ""
-                            If CheckBox1.Checked Then
-                                sPath = subPath.ToString + "\subtitles"
+                            If Directory.Exists(tempPath & "sub") Then
+                                IO.Directory.Delete(tempPath & "sub", True)
+                            End If
+
+                            My.Computer.Network.DownloadFile("https://subscene.com" + xf, tempPath & "sub.zip")
+
+                            Dim _zLibraryPath As String = ""
+                            If System.Environment.Is64BitProcess = True Then
+                                _zLibraryPath = My.Computer.FileSystem.CurrentDirectory + "\x64\7z.dll"
                             Else
-                                sPath = subPath.ToString
+                                _zLibraryPath = My.Computer.FileSystem.CurrentDirectory + "\x86\7z.dll"
                             End If
 
-                            If IO.Directory.Exists(sPath) = False Then
-                                IO.Directory.CreateDirectory(sPath)
-                            End If
+                            SevenZipBase.SetLibraryPath(_zLibraryPath)
+                            Dim Extractor As New SevenZipExtractor(tempPath & "sub.zip")
+                            Extractor.ExtractArchive(tempPath & "sub")
 
-                            Try
-                                SetAttr(sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", FileAttribute.Normal)
-                            Catch ex As Exception
-                            End Try
-                            File.Copy(subFilename, sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", True)
+                            Dim subFiles = Directory.EnumerateFiles(tempPath & "sub", "*.*", SearchOption.AllDirectories) _
+                            .Where(Function(s) s.EndsWith(".srt", StringComparison.OrdinalIgnoreCase))
 
-                            If CheckBox2.Checked Then
+                            For Each subFilename As String In subFiles
+
+                                Dim sPath As String = ""
+                                If CheckBox1.Checked Then
+                                    sPath = subPath.ToString + "\subtitles"
+                                Else
+                                    sPath = subPath.ToString
+                                End If
+
+                                If IO.Directory.Exists(sPath) = False Then
+                                    IO.Directory.CreateDirectory(sPath)
+                                End If
+
                                 Try
-                                    SetAttr(sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", FileAttribute.Hidden)
-                                    SetAttr(subPath.ToString + "\subtitles", FileAttribute.Hidden)
+                                    SetAttr(sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", FileAttribute.Normal)
                                 Catch ex As Exception
                                 End Try
+                                File.Copy(subFilename, sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", True)
+
+                                If CheckBox2.Checked Then
+                                    Try
+                                        SetAttr(sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", FileAttribute.Hidden)
+                                        SetAttr(subPath.ToString + "\subtitles", FileAttribute.Hidden)
+                                    Catch ex As Exception
+                                    End Try
+                                End If
+
+                                b += 1
+                            Next
+
+                            If File.Exists(tempPath & "sub.zip") Then
+                                IO.File.Delete(tempPath & "sub.zip")
                             End If
 
-                            b += 1
+                            If Directory.Exists(tempPath & "sub") Then
+                                IO.Directory.Delete(tempPath & "sub", True)
+                            End If
+
                         Next
+                        'Catch ex As Exception
+                        '    writer.WriteLine("Error Message in  Occured at-- " & DateTime.Now & vbNewLine & ex.ToString & vbNewLine)
+                        'End Try
 
-                        If File.Exists(tempPath & "sub.zip") Then
-                            IO.File.Delete(tempPath & "sub.zip")
-                        End If
+                    ElseIf DataGridView1.RowCount > sN Then
 
-                        If Directory.Exists(tempPath & "sub") Then
-                            IO.Directory.Delete(tempPath & "sub", True)
-                        End If
+                        'Try
+                        For i As Integer = 0 To (sN - 1)
+                            Dim xhtml = DataGridView1.Rows(i).Cells(1).Value
+                            Dim xweb As HtmlWeb = New HtmlWeb()
+                            Dim xhtmlDoc = xweb.Load(xhtml)
+                            Dim xf As String = ""
 
-                    Next
-                    'Catch ex As Exception
-                    '    writer.WriteLine("Error Message in  Occured at-- " & DateTime.Now & vbNewLine & ex.ToString & vbNewLine)
-                    'End Try
+                            For Each node As HtmlNode In xhtmlDoc.DocumentNode.SelectNodes("//*[@id=""downloadButton""]")
+                                Dim value As String = node.OuterHtml
 
-                ElseIf DataGridView1.RowCount = 0 Then
+                                Dim xs As String = value
+                                Dim xi As Integer = xs.IndexOf("""")
+                                xf = xs.Substring(xi + 1, xs.IndexOf("""", xi + 1) - xi - 1)
 
-                End If
-                'Catch ex As Exception
-                '    writer.WriteLine("Error Message in  Occured at-- " & DateTime.Now & vbNewLine & ex.ToString & vbNewLine)
-                'End Try
+                            Next
+
+                            If File.Exists(tempPath & "sub.zip") Then
+                                IO.File.Delete(tempPath & "sub.zip")
+                            End If
+
+                            If Directory.Exists(tempPath & "sub") Then
+                                IO.Directory.Delete(tempPath & "sub", True)
+                            End If
+
+                            My.Computer.Network.DownloadFile("https://subscene.com" + xf, tempPath & "sub.zip")
+
+                            Dim _zLibraryPath As String = ""
+                            If System.Environment.Is64BitProcess = True Then
+                                _zLibraryPath = My.Computer.FileSystem.CurrentDirectory + "\x64\7z.dll"
+                            Else
+                                _zLibraryPath = My.Computer.FileSystem.CurrentDirectory + "\x86\7z.dll"
+                            End If
+
+                            SevenZipBase.SetLibraryPath(_zLibraryPath)
+                            Dim Extractor As New SevenZipExtractor(tempPath & "sub.zip")
+                            Extractor.ExtractArchive(tempPath & "sub")
+
+                            Dim subFiles = Directory.EnumerateFiles(tempPath & "sub", "*.*", SearchOption.AllDirectories) _
+                            .Where(Function(s) s.EndsWith(".srt", StringComparison.OrdinalIgnoreCase))
+
+                            For Each subFilename As String In subFiles
+
+                                Dim sPath As String = ""
+                                If CheckBox1.Checked Then
+                                    sPath = subPath.ToString + "\subtitles"
+                                Else
+                                    sPath = subPath.ToString
+                                End If
+
+                                If IO.Directory.Exists(sPath) = False Then
+                                    IO.Directory.CreateDirectory(sPath)
+                                End If
+
+                                Try
+                                    SetAttr(sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", FileAttribute.Normal)
+                                Catch ex As Exception
+                                End Try
+                                File.Copy(subFilename, sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", True)
+
+                                If CheckBox2.Checked Then
+                                    Try
+                                        SetAttr(sPath.ToString + "\" + movieName.ToString + "." + LangCode + "." + b.ToString + ".srt", FileAttribute.Hidden)
+                                        SetAttr(subPath.ToString + "\subtitles", FileAttribute.Hidden)
+                                    Catch ex As Exception
+                                    End Try
+                                End If
+
+                                b += 1
+                            Next
+
+                            If File.Exists(tempPath & "sub.zip") Then
+                                IO.File.Delete(tempPath & "sub.zip")
+                            End If
+
+                            If Directory.Exists(tempPath & "sub") Then
+                                IO.Directory.Delete(tempPath & "sub", True)
+                            End If
+
+                        Next
+                        'Catch ex As Exception
+                        '    writer.WriteLine("Error Message in  Occured at-- " & DateTime.Now & vbNewLine & ex.ToString & vbNewLine)
+                        'End Try
+
+                    ElseIf DataGridView1.RowCount = 0 Then
+
+                    End If
+                Catch ex As Exception
+                    writer.WriteLine("Error Message in  Occured at-- " & DateTime.Now & vbNewLine & ex.ToString & vbNewLine)
+                End Try
                 c += 1
 
             Next
