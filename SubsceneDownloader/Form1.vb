@@ -8,6 +8,7 @@ Public Class Form1
     Dim FilesCount As Integer = 0
     Dim Lang As String = "Arabic"
     Dim LangCode As String = "Ara"
+    Dim movieName As String = ""
 
     Public Shared Function isConnected() As Boolean
         Try
@@ -153,7 +154,7 @@ Public Class Form1
             End If
 
             Dim subPath As String = FileIO.SpecialDirectories.Temp & "\SubSceneDownloader"
-            Dim movieName As String = ""
+
             Dim files = Directory.EnumerateFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories) _
                         .Where(Function(s) s.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) _
                                     OrElse s.EndsWith(".mpg", StringComparison.OrdinalIgnoreCase) _
@@ -222,6 +223,7 @@ Public Class Form1
                     Dim html = "https://subscene.com/subtitles/release?q=" + movieName + "&r=true"
                     Dim web As HtmlWeb = New HtmlWeb()
                     Dim htmlDoc = web.Load(html)
+                    htmlDoc.OptionAutoCloseOnEnd = True
                     Dim htmlBody = htmlDoc.DocumentNode.SelectSingleNode("//body/div/div/div/div/table/tbody")
                     Dim childNodes As HtmlNodeCollection = htmlBody.ChildNodes
                     Dim n As Integer = 0
@@ -487,6 +489,7 @@ Public Class Form1
 
         ProgressBar1.Value = (e.ProgressPercentage / FilesCount) * 100
 
+        Label6.Text = movieName
 
     End Sub
 
@@ -512,9 +515,11 @@ Public Class Form1
         Button1.Enabled = True
         Button2.Enabled = True
         GroupBox1.Enabled = True
+        Label6.Text = ""
     End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Label6.Text = ""
         Label1.Text = ""
         ComboBox1.SelectedIndex = 0
         ComboBox2.SelectedIndex = 0
