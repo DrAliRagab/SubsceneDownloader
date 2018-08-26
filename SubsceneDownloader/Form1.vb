@@ -334,8 +334,10 @@ Public Class Form1
                             End If
 
                             SevenZipBase.SetLibraryPath(_zLibraryPath)
+
                             Dim Extractor As New SevenZipExtractor(tempPath & "sub.zip")
                             Extractor.ExtractArchive(tempPath & "sub")
+                            'Extractor.Dispose()
 
                             Dim subFiles = Directory.EnumerateFiles(tempPath & "sub", "*.*", SearchOption.AllDirectories) _
                             .Where(Function(s) s.EndsWith(".srt", StringComparison.OrdinalIgnoreCase))
@@ -421,6 +423,7 @@ Public Class Form1
                             SevenZipBase.SetLibraryPath(_zLibraryPath)
                             Dim Extractor As New SevenZipExtractor(tempPath & "sub.zip")
                             Extractor.ExtractArchive(tempPath & "sub")
+                            'Extractor.Dispose()
 
                             Dim subFiles = Directory.EnumerateFiles(tempPath & "sub", "*.*", SearchOption.AllDirectories) _
                             .Where(Function(s) s.EndsWith(".srt", StringComparison.OrdinalIgnoreCase))
